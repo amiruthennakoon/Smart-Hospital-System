@@ -29,3 +29,67 @@ int patientIsAdmitted[MAX_PATIENTS];
 int patientWardIDs[MAX_PATIENTS];
 int patientDaysAdmitted[MAX_PATIENTS];
 double patientFinalAmounts[MAX_PATIENTS];
+
+void displayMenu(void);
+void displayBedOccupancy(void);
+
+int main(void) {
+    int choice = 0;
+
+    while (choice != 5) {
+        displayMenu();
+        printf("Enter your choice (1-5): ");
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Exiting...\n");
+            break;
+        }
+
+        switch (choice) {
+            case 1:
+                printf("\n[Pending] Patient Registration module (Branch 2 & 3)\n");
+                break;
+            case 2:
+                displayBedOccupancy();
+                break;
+            case 3:
+                printf("\n[Pending] Priority Triage Sorting (Branch 4)\n");
+                break;
+            case 4:
+                printf("\n[Pending] Performance Reports & Analytics (Branch 5)\n");
+                break;
+            case 5:
+                printf("\nExiting Smart Hospital System. Goodbye!\n");
+                break;
+            default:
+                printf("\n[Error] Invalid option! Please select between 1 and 5.\n");
+        }
+    }
+
+    return 0;
+}
+
+void displayBedOccupancy(void) {
+    printf("\n==================================================\n");
+    printf("         HOSPITAL BED OCCUPANCY STATUS            \n");
+    printf("==================================================\n");
+    for (int w = 0; w < NUM_WARDS; w++) {
+        printf("\n%s (Total Capacity: %d beds):\n", WARD_NAMES[w], WARD_BED_CAPACITIES[w]);
+        for (int b = 0; b < WARD_BED_CAPACITIES[w]; b++) {
+            printf("[Bed %02d: %s] ", b + 1, bedOccupancy[w][b] == 1 ? "OCCUPIED" : "AVAILABLE");
+            if ((b + 1) % 5 == 0) printf("\n");
+        }
+        printf("\n");
+    }
+}
+
+void displayMenu(void) {
+    printf("\n==================================================\n");
+    printf("   SMART HOSPITAL & RESOURCE ALLOCATION SYSTEM   \n");
+    printf("==================================================\n");
+    printf("1. Register Patient & Generate Bill\n");
+    printf("2. View Bed Occupancy Matrix\n");
+    printf("3. Display Priority Queue (Triage Sorting)\n");
+    printf("4. Performance Reports & Analytics\n");
+    printf("5. Exit\n");
+    printf("==================================================\n");
+}
