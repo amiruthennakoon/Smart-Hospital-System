@@ -32,6 +32,39 @@ double patientFinalAmounts[MAX_PATIENTS];
 
 void displayMenu(void);
 void displayBedOccupancy(void);
+void registerPatient(void);
+
+
+void registerPatient(void) {
+    if (patientCount >= MAX_PATIENTS) {
+        printf("\n[Error] Maximum patient capacity reached (%d patients max).\n", MAX_PATIENTS);
+        return;
+    }
+
+    int i = patientCount;
+
+    printf("\n==================================================\n");
+    printf("            PATIENT INTAKE REGISTRATION           \n");
+    printf("==================================================\n");
+
+    printf("Enter Patient Name: ");
+    getchar();
+    fgets(patientNames[i], sizeof(patientNames[i]), stdin);
+    patientNames[i][strcspn(patientNames[i], "\n")] = '\0';
+
+    printf("Enter Patient Age: ");
+    scanf("%d", &patientAges[i]);
+
+    do {
+        printf("Enter Urgency Level (1 = Normal, 2 = Urgent, 3 = Critical): ");
+        scanf("%d", &patientUrgencyLevels[i]);
+        if (patientUrgencyLevels[i] < 1 || patientUrgencyLevels[i] > 3) {
+            printf("[Invalid Input] Please enter 1, 2, or 3.\n");
+        }
+    } while (patientUrgencyLevels[i] < 1 || patientUrgencyLevels[i] > 3);
+
+    printf("\n[Success] Basic patient details saved for index %d!\n", i);
+}
 
 int main(void) {
     int choice = 0;
@@ -46,7 +79,7 @@ int main(void) {
 
         switch (choice) {
             case 1:
-                printf("\n[Pending] Patient Registration module (Branch 2 & 3)\n");
+                registerPatient();
                 break;
             case 2:
                 displayBedOccupancy();
