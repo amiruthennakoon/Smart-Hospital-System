@@ -79,6 +79,63 @@ void registerPatient(void) {
     specialtyQueueCounts[specIndex]++;
 
     printf("\n[Success] Assigned to %s! Current Queue Count: %d\n",SPECIALTY_NAMES[specIndex], specialtyQueueCounts[specIndex]);
+
+    do {
+        printf("\nIs Patient Admitted to Ward? (1 = Yes, 0 = No): ");
+        scanf("%d", &patientIsAdmitted[i]);
+        if (patientIsAdmitted[i] != 0 && patientIsAdmitted[i] != 1) {
+            printf("[Invalid Input] Please enter 1 for Yes or 0 for No.\n");
+        }
+    } while (patientIsAdmitted[i] != 0 && patientIsAdmitted[i] != 1);
+
+    if (patientIsAdmitted[i] == 1) {
+        printf("\nAvailable Hospital Wards:\n");
+        for (int w = 0; w < NUM_WARDS; w++) {
+            printf("  %d. %s (Rate: LKR %.2f/day | Cap: %d beds)\n",
+                   WARD_IDS[w],
+                   WARD_NAMES[w],
+                   WARD_DAILY_RATES[w],
+                   WARD_BED_CAPACITIES[w]);
+        }
+
+        do {
+            printf("Select Ward ID (1 to 4): ");
+            scanf("%d", &patientWardIDs[i]);
+            if (patientWardIDs[i] < 1 || patientWardIDs[i] > NUM_WARDS) {
+                printf("[Invalid Input] Ward ID must be between 1 and 4.\n");
+            }
+        } while (patientWardIDs[i] < 1 || patientWardIDs[i] > NUM_WARDS);
+
+        printf("Enter Number of Days Admitted: ");
+        scanf("%d", &patientDaysAdmitted[i]);
+
+        int wardIdx = patientWardIDs[i] - 1;
+        int bedAssigned = -1;
+
+        for (int b = 0; b < WARD_BED_CAPACITIES[wardIdx]; b++) {
+            if (bedOccupancy[wardIdx][b] == 0) {
+                bedOccupancy[wardIdx][b] = 1;
+                bedAssigned = b + 1;
+                break;
+            }
+        }
+
+        if (bedAssigned != -1) {
+            printf("[Success] Allocated to %s (Bed #%02d)\n", WARD_NAMES[wardIdx], bedAssigned);
+        } else {
+            printf("[Warning] Ward full! No beds available in %s. Reverting to Outpatient status.\n", WARD_NAMES[wardIdx]);
+            patientIsAdmitted[i] = 0;
+            patientWardIDs[i] = 0;
+            patientDaysAdmitted[i] = 0;
+        }
+    } else {
+
+        patientWardIDs[i] = 0;
+        patientDaysAdmitted[i] = 0;
+    }
+
+    patientCount++;
+    printf("\n[Success] Patient Intake Complete! Total Registered Patients: %d\n", patientCount);
 }
 
 int main(void) {
