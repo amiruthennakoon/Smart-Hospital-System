@@ -63,7 +63,22 @@ void registerPatient(void) {
         }
     } while (patientUrgencyLevels[i] < 1 || patientUrgencyLevels[i] > 3);
 
-    printf("\n[Success] Basic patient details saved for index %d!\n", i);
+    printf("\nAvailable Doctor Specialties:\n");
+    for (int s = 0; s < NUM_SPECIALTIES; s++){
+        printf(" %d. %s (Fee: LKR %.2f | Cap: %d/day)\n",SPECIALTY_IDS[s],SPECIALTY_NAMES[s],BASE_CONSULTATION_FEES[s],DAILY_PATIENT_CAPS[s]);
+    }
+    do {
+        printf("Select Specialty ID (1 to 4): ");
+        scanf("%d", &patientSpecialtyIDs[i]);
+        if (patientSpecialtyIDs[i] < 1 || patientSpecialtyIDs[i] > NUM_SPECIALTIES) {
+            printf("[Invalid Input] Specialty ID must be between 1 and 4. \n");
+        }
+    } while (patientSpecialtyIDs[i] < 1 || patientSpecialtyIDs[i] > NUM_SPECIALTIES);
+
+    int specIndex = patientSpecialtyIDs[i] - 1;
+    specialtyQueueCounts[specIndex]++;
+
+    printf("\n[Success] Assigned to %s! Current Queue Count: %d\n",SPECIALTY_NAMES[specIndex], specialtyQueueCounts[specIndex]);
 }
 
 int main(void) {
