@@ -33,6 +33,7 @@ double patientFinalAmounts[MAX_PATIENTS];
 void displayMenu(void);
 void displayBedOccupancy(void);
 void registerPatient(void);
+double calculateWaitingTime(int specIndex);
 
 
 void registerPatient(void) {
@@ -136,6 +137,13 @@ void registerPatient(void) {
 
     patientCount++;
     printf("\n[Success] Patient Intake Complete! Total Registered Patients: %d\n", patientCount);
+}
+
+double calculateWaitingTime(int specIndex){
+    if (specIndex < 0 || specIndex >= NUM_SPECIALTIES) {
+        return 0.0;
+    }
+    return (double)(specialtyQueueCounts[specIndex] * CONSULTATION_TIMES[specIndex]);
 }
 
 int main(void) {
