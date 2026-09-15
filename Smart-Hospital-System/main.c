@@ -35,6 +35,8 @@ void displayBedOccupancy(void);
 void registerPatient(void);
 double calculateWaitingTime(int specIndex);
 double calculateSurcharge(double baseFee, int urgencyLevel);
+double calculateWardCost(int isAdmitted, int wardID, int days);
+double calculateGrossTotal(double baseFee, double surcharge, double wardCost);
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -152,6 +154,16 @@ double calculateSurcharge(double baseFee, int urgencyLevel) {
         return baseFee * 0.50;
     }
     return 0.0;
+}
+double calculateWardCost(int isAdmitted, int wardID, int days){
+    if (isAdmitted == 1 && wardID >= 1 && wardID <= NUM_WARDS){
+        return WARD_DAILY_RATES[wardID - 1] * (double)days;
+    }
+    return 0.0;
+}
+
+double calculateGrossTotal(double baseFee, double surcharge, double wardCost){
+    return baseFee + surcharge + wardCost;
 }
 
 int main(void) {
