@@ -37,6 +37,8 @@ double calculateWaitingTime(int specIndex);
 double calculateSurcharge(double baseFee, int urgencyLevel);
 double calculateWardCost(int isAdmitted, int wardID, int days);
 double calculateGrossTotal(double baseFee, double surcharge, double wardCost);
+double calculateAgeDiscount(int age, double grossTotal);
+
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -164,6 +166,12 @@ double calculateWardCost(int isAdmitted, int wardID, int days){
 
 double calculateGrossTotal(double baseFee, double surcharge, double wardCost){
     return baseFee + surcharge + wardCost;
+}
+double calculateAgeDiscount(int age, double grossTotal){
+    if (age < 5 || age > 65){
+        return grossTotal * 0.15;
+    }
+    return 0.0;
 }
 
 int main(void) {
