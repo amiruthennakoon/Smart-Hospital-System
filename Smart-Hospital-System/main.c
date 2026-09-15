@@ -34,7 +34,7 @@ void displayMenu(void);
 void displayBedOccupancy(void);
 void registerPatient(void);
 double calculateWaitingTime(int specIndex);
-
+double calculateSurcharge(double baseFee, int urgencyLevel);
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -144,6 +144,14 @@ double calculateWaitingTime(int specIndex){
         return 0.0;
     }
     return (double)(specialtyQueueCounts[specIndex] * CONSULTATION_TIMES[specIndex]);
+}
+double calculateSurcharge(double baseFee, int urgencyLevel) {
+    if (urgencyLevel == 2){
+        return baseFee * 0.20;
+    } else if (urgencyLevel == 3){
+        return baseFee * 0.50;
+    }
+    return 0.0;
 }
 
 int main(void) {
