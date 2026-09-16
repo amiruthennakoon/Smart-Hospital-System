@@ -41,6 +41,10 @@ double calculateAgeDiscount(int age, double grossTotal);
 void printPatientReceipt(int i);
 void displayPriorityQueue(void);
 void generateReports(void);
+void saveBedStatus(void);
+void loadBedStatus(void);
+void logPatientRecord(int i);
+
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -122,6 +126,9 @@ void registerPatient(void) {
         for (int b = 0; b < WARD_BED_CAPACITIES[wardIdx]; b++) {
             if (bedOccupancy[wardIdx][b] == 0) {
                 bedOccupancy[wardIdx][b] = 1;
+
+                saveBedStatus();
+
                 bedAssigned = b + 1;
                 break;
             }
@@ -142,6 +149,8 @@ void registerPatient(void) {
     }
 
     printPatientReceipt(i);
+
+    logPatientRecord(i);
 
     patientCount++;
     printf("\n[Success] Patient Intake Complete! Total Registered Patients: %d\n", patientCount);
@@ -340,7 +349,66 @@ void generateReports(void){
     printf("==================================================\n");
 }
 
+void saveBedStatus(void){
+    FILE *fp = fopen("beds_status.txt", "w");
+    if (fp == NULL){
+        printf("[File Error] Unable to open beds_status.txt for writing.\n");
+        return;
+    }
+
+    for (int w = 0; w < NUM_WARDS; w++){
+        for (int b = 0; b < WARD_BED_CAPACITIES[w]; b++){
+            fprintf(fp, "%d", bedOccupancy[w][b]);
+        }
+        fprintf(fp,"\n");
+    }
+
+    fclose(fp);
+}
+
+void loadBedStatus(void){
+    FILE *fp = fopen("beds_status.txt", "r");
+    if (fp == NULL){
+        return;
+    }
+
+    for (int w = 0; w < NUM_WARDS; w++){
+        for (int b =0; b < WARD_BED_CAPACITIES[w]; b++){
+            if (fscanf(fp, "%d", &bedOccupancy[w][b]) != 1){
+                bedOccupancy[w][b] = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("[System Log] Bed occupancy status successfully loaded from file.\n");
+}
+void logPatientRecord(int i){
+    FILE *fp = fopen("patient_records.txt", "a");
+    if (fp == NULL){
+        printf("[File Error] Unable to open Patient_records.txt for appending. \n");
+        return;
+    }
+    int specIdx = patientSpecialtyIDs[i] - 1;
+
+    fprintf(fp, "==================================================\n");
+    fprintf(fp, "ID               : PAT-%04d\n", 1001 + i);
+    fprintf(fp, "Name             : %s\n", patientNames[i]);
+    fprintf(fp, "Age              : %d\n", patientAges[i]);
+    fprintf(fp, "Specialty        : %s\n", SPECIALTY_NAMES[specIdx]);
+    fprintf(fp, "Urgency Level    : Level %d\n", patientUrgencyLevels[i]);
+    fprintf(fp, "Admitted         : %s\n", patientIsAdmitted[i] ? "Yes" : "No");
+    if (patientIsAdmitted[i]) {
+        fprintf(fp, "Ward ID          : %d (%s)\n", patientWardIDs[i], WARD_NAMES[patientWardIDs[i] - 1]);
+        fprintf(fp, "Days Admitted    : %d\n", patientDaysAdmitted[i]);
+    }
+    fprintf(fp, "Final Amount     : LKR %.2f\n", patientFinalAmounts[i]);
+    fprintf(fp, "==================================================\n\n");
+
+    fclose(fp);
+}
+
 int main(void) {
+    loadBedStatus();
     int choice = 0;
 
     while (choice != 5) {

@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1788610309 source:c:\csc1012 assignment\smart-hospital-system\smart-hospital-system\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
