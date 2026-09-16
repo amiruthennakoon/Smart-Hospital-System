@@ -39,6 +39,7 @@ double calculateWardCost(int isAdmitted, int wardID, int days);
 double calculateGrossTotal(double baseFee, double surcharge, double wardCost);
 double calculateAgeDiscount(int age, double grossTotal);
 void printPatientReceipt(int i);
+void displayPriorityQueue(void);
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -229,6 +230,54 @@ void printPatientReceipt(int i){
    printf("==================================================\n");
 }
 
+void displayPriorityQueue(void){
+    if (patientCount == 0){
+        printf("\n[Notice] No patients currently registered in the system. \n");
+        return;
+    }
+    int order[MAX_PATIENTS];
+    for (int i = 0; i < patientCount; i++){
+        order[i] = i;
+    }
+
+    for (int i = 0; i < patientCount - 1; i++){
+        for (int j = 0; j < patientCount - i - 1; j++){
+            int idx1 = order[j];
+            int idx2 = order[j+1];
+
+            if (patientUrgencyLevels[idx1] < patientUrgencyLevels[idx2]){
+                int temp = order[j];
+                order[j] = order[j+1];
+                order[j+1] = temp;
+            }
+        }
+    }
+
+    printf("\n======================================================================\n");
+    printf("                EMERGENCY TRIAGE PRIORITY QUEUE                       \n");
+    printf("======================================================================\n");
+    printf("%-6s | %-20s | %-8s | %-20s | %-12s\n", "ID", "Name", "Age", "Specialty", "Urgency");
+    printf("----------------------------------------------------------------------\n");
+
+    for (int k = 0; k < patientCount; k++) {
+        int idx = order[k];
+        int specIdx = patientSpecialtyIDs[idx] - 1;
+
+        char urgencyStr[20];
+        if (patientUrgencyLevels[idx] == 3) strcpy(urgencyStr, "Level 3 (Critical)");
+        else if (patientUrgencyLevels[idx] == 2) strcpy(urgencyStr, "Level 2 (Urgent)");
+        else strcpy(urgencyStr, "Level 1 (Normal)");
+
+        printf("PAT-%04d | %-20s | %-8d | %-20s | %-12s\n",
+               1001 + idx,
+               patientNames[idx],
+               patientAges[idx],
+               SPECIALTY_NAMES[specIdx],
+               urgencyStr);
+    }
+    printf("======================================================================\n");
+}
+
 int main(void) {
     int choice = 0;
 
@@ -248,7 +297,7 @@ int main(void) {
                 displayBedOccupancy();
                 break;
             case 3:
-                printf("\n[Pending] Priority Triage Sorting (Branch 4)\n");
+                displayPriorityQueue();
                 break;
             case 4:
                 printf("\n[Pending] Performance Reports & Analytics (Branch 5)\n");
