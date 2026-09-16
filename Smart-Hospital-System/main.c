@@ -40,6 +40,7 @@ double calculateGrossTotal(double baseFee, double surcharge, double wardCost);
 double calculateAgeDiscount(int age, double grossTotal);
 void printPatientReceipt(int i);
 void displayPriorityQueue(void);
+void generateReports(void);
 
 void registerPatient(void) {
     if (patientCount >= MAX_PATIENTS) {
@@ -277,6 +278,67 @@ void displayPriorityQueue(void){
     }
     printf("======================================================================\n");
 }
+void generateReports(void){
+    if (patientCount == 0){
+        printf("\n[Notice] No patient data available to generate reports.\n");
+        return;
+    }
+
+    int lvl1Count = 0, lvl2Count = 0, lvl3Count = 0;
+    double totalRevenue = 0.0;
+    double totalDiscounts = 0.0;
+    double maxBill = -1.0;
+    int highestPayingIdx = -1;
+
+    for (int i = 0; i < patientCount; i++){
+
+        if (patientUrgencyLevels[i] == 1) lvl1Count++;
+        else if (patientUrgencyLevels[i] == 2) lvl2Count++;
+        else if (patientUrgencyLevels[i] == 3) lvl3Count++;
+
+        int specIdx = patientSpecialtyIDs[i] - 1;
+        double baseFee = BASE_CONSULTATION_FEES[specIdx];
+        double surcharge = calculateSurcharge(baseFee, patientUrgencyLevels[i]);
+        double wardCost = calculateWardCost(patientIsAdmitted[i], patientWardIDs[i], patientDaysAdmitted[i]);
+        double grossTotal = calculateGrossTotal(baseFee, surcharge, wardCost);
+        double discount = calculateAgeDiscount(patientAges[i], grossTotal);
+        double finalPayable = grossTotal - discount;
+
+        totalRevenue += finalPayable;
+        totalDiscounts += discount;
+
+        if (finalPayable > maxBill){
+            maxBill = finalPayable;
+            highestPayingIdx  = i;
+        }
+    }
+    printf("\n==================================================\n");
+    printf("         SYSTEM PERFORMANCE & ANALYTICS           \n");
+    printf("==================================================\n");
+    printf("Total Patients Registered: %d\n", patientCount);
+    printf("  - Urgency Level 1 (Normal)   : %d\n", lvl1Count);
+    printf("  - Urgency Level 2 (Urgent)   : %d\n", lvl2Count);
+    printf("  - Urgency Level 3 (Critical) : %d\n", lvl3Count);
+    printf("--------------------------------------------------\n");
+    printf("Total Revenue Earned     : LKR %.2f\n", totalRevenue);
+    printf("Total Discounts Granted  : LKR %.2f\n", totalDiscounts);
+    printf("--------------------------------------------------\n");
+    printf("BED OCCUPANCY PERCENTAGE PER WARD:\n");
+
+    for (int w = 0; w < NUM_WARDS; w++){
+        int occupiedCount = 0;
+        for (int b = 0; b < WARD_BED_CAPACITIES[w]; b++){
+            if (bedOccupancy[w][b] == 1)occupiedCount++;
+        }
+        double occupancyPct = ((double)occupiedCount / WARD_BED_CAPACITIES[w]) * 100.0;
+        printf("  - %-25s : %.1f%% (%d/%d beds)\n", WARD_NAMES[w], occupancyPct, occupiedCount, WARD_BED_CAPACITIES[w]);
+    }
+    printf("--------------------------------------------------\n");
+    if (highestPayingIdx != -1){
+        printf("Highest-Paying Patient   : %s (LKR %.2f)\n", patientNames[highestPayingIdx], maxBill);
+    }
+    printf("==================================================\n");
+}
 
 int main(void) {
     int choice = 0;
@@ -300,7 +362,7 @@ int main(void) {
                 displayPriorityQueue();
                 break;
             case 4:
-                printf("\n[Pending] Performance Reports & Analytics (Branch 5)\n");
+                generateReports();
                 break;
             case 5:
                 printf("\nExiting Smart Hospital System. Goodbye!\n");
